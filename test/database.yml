@@ -1,0 +1,5 @@
+adapter:  postgresql
+host:     localhost
+username: postgres
+password: postgres
+database: pg_like_test
