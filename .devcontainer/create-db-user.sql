@@ -1,0 +1,3 @@
+CREATE USER vscode CREATEDB;
+CREATE DATABASE vscode WITH OWNER vscode;
+CREATE DATABASE pg_like_test WITH OWNER vscode;
