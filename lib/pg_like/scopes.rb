@@ -8,7 +8,7 @@ module PgLike
                 terms = terms.map do |string|
                   string.prepend('%') if %i[both starts_with].include?(criterea.to_sym)
                   string.concat('%') if %i[both ends_with].include?(criterea.to_sym)
-                  "UNACCENT('#{string}')" if unaccent
+                  unaccent ? "UNACCENT('#{string}')" : "'#{string}'"
                 end
                 left_clause = "LOWER(#{field})"
                 left_clause = "UNACCENT(#{left_clause})" if unaccent
@@ -17,17 +17,17 @@ module PgLike
               }
 
             scope :like_all, lambda { |field, terms = nil, criterea: :both, unaccent: true|
-                terms = [terms] unless terms.is_a?(Array)
-                terms = terms.map(&:downcase)
-                terms = terms.map do |string|
-                  string.prepend('%') if %i[both starts_with].include?(criterea.to_sym)
-                  string.concat('%') if %i[both ends_with].include?(criterea.to_sym)
-                  "UNACCENT('#{string}')" if unaccent
-                end
-                left_clause = "LOWER(#{field})"
-                left_clause = "UNACCENT(#{left_clause})" if unaccent
-                right_clause = "(array[#{terms.join(', ')}])"
-                where("#{left_clause} LIKE ALL #{right_clause}")
+              terms = [terms] unless terms.is_a?(Array)
+              terms = terms.map(&:downcase)
+              terms = terms.map do |string|
+                string.prepend('%') if %i[both starts_with].include?(criterea.to_sym)
+                string.concat('%') if %i[both ends_with].include?(criterea.to_sym)
+                unaccent ? "UNACCENT('#{string}')" : "'#{string}'"
+              end
+              left_clause = "LOWER(#{field})"
+              left_clause = "UNACCENT(#{left_clause})" if unaccent
+              right_clause = "(array[#{terms.join(', ')}])"
+              where("#{left_clause} LIKE ALL #{right_clause}")
               }
           end
 
